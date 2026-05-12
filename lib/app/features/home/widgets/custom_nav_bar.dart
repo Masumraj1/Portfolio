@@ -5,7 +5,7 @@ import 'nav_button.dart';
 class CustomNavbar extends StatelessWidget {
   final bool isMobile;
   final void Function(GlobalKey) scrollTo;
-
+  final VoidCallback? onMenuPressed; // এটি যোগ করুন
   final GlobalKey aboutKey;
   final GlobalKey educationKey;
   final GlobalKey skillsKey;
@@ -22,7 +22,7 @@ class CustomNavbar extends StatelessWidget {
     required this.skillsKey,
     required this.expKey,
     required this.projectsKey,
-    required this.contactKey,
+    required this.contactKey, this.onMenuPressed,
   });
 
   @override
@@ -89,14 +89,11 @@ class CustomNavbar extends StatelessWidget {
               ],
             )
 
-          /// Mobile Menu (future expandable)
           else
             IconButton(
               icon: const Icon(Icons.menu_rounded),
               color: Colors.white,
-              onPressed: () {
-                // TODO: Open mobile drawer / bottom sheet
-              },
+              onPressed: onMenuPressed
             ),
         ],
       ),

@@ -15,10 +15,12 @@ class ContactInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 768;
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.h),
       padding: EdgeInsets.all(16.r),
-      width: 350.w, // ডেসকটপে সুন্দর দেখানোর জন্য ফিক্সড উইডথ
+      width: isMobile ? double.infinity : 350.w, // ডেসকটপে সুন্দর দেখানোর জন্য ফিক্সড উইডথ
       decoration: BoxDecoration(
         color: const Color(0xFF161B22), // আপনার থিমের সাথে ম্যাচিং কার্ড কালার
         borderRadius: BorderRadius.circular(15.r),

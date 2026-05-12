@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:portfolio_web/app/features/home/widgets/custom_network_image.dart';
-import 'package:url_launcher/url_launcher.dart'; // লিঙ্ক ওপেন করার জন্য এটি প্রয়োজন
+import 'package:url_launcher/url_launcher.dart';
 
 class ExperienceCard extends StatelessWidget {
   final String role;
@@ -27,80 +26,126 @@ class ExperienceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline logic
+          // Timeline Indicator
           Column(
             children: [
               Container(
-                width: 14.r,
-                height: 14.r,
+                width: isMobile ? 12.r : 14.r,
+                height: isMobile ? 12.r : 14.r,
                 decoration: BoxDecoration(
                   color: Colors.blueAccent,
                   shape: BoxShape.circle,
                   boxShadow: [
-                    BoxShadow(color: Colors.blueAccent.withOpacity(0.3), blurRadius: 10)
+                    BoxShadow(
+                      color: Colors.blueAccent.withValues(alpha: 0.3),
+                      blurRadius: 10,
+                    )
                   ],
                 ),
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(width: 2.w, color: Colors.blueAccent.withOpacity(0.2)),
+                  child: Container(
+                    width: 2.w,
+                    color: Colors.blueAccent.withValues(alpha: 0.15),
+                  ),
                 ),
             ],
           ),
-          SizedBox(width: 20.w),
+          SizedBox(width: isMobile ? 15.w : 25.w),
 
+          // Content Card
           Expanded(
-            child: InkWell( // ক্লিকের জন্য InkWell ব্যবহার করা হয়েছে
-              onTap: () async {
-                final Uri url = Uri.parse(companyUrl);
-                if (!await launchUrl(url)) throw 'Could not launch $url';
-              },
-              borderRadius: BorderRadius.circular(20.r),
-              child: Container(
-                margin: EdgeInsets.only(bottom: 30.h),
-                padding: EdgeInsets.all(20.r),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF161B22),
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-
-                        CustomNetworkImage(imageUrl: logoUrl, height: 50.r, width: 50.r),
-                        // কোম্পানি লোগো
-                        // Container(
-                        //   width: 50.r,
-                        //   height: 50.r,
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.white, // লোগোর ব্যাকগ্রাউন্ড সাদা হলে ভালো দেখায়
-                        //     borderRadius: BorderRadius.circular(10.r),
-                        //     image: DecorationImage(
-                        //       image: NetworkImage(logoUrl),
-                        //       fit: BoxFit.contain,
-                        //     ),
-                        //   ),
-                        // ),
-                        SizedBox(width: 15.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(role, style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-                              Text(company, style: TextStyle(color: Colors.blueAccent, fontSize: 14.sp)),
-                            ],
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 25.h),
+              child: InkWell(
+                onTap: () async {
+                  final Uri url = Uri.parse(companyUrl);
+                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                    debugPrint('Could not launch $url');
+                  }
+                },
+                borderRadius: BorderRadius.circular(16.r),
+                child: Container(
+                  padding: EdgeInsets.all(isMobile ? 16.r : 20.r),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF161B22),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                    // হোভার ইফেক্ট দেওয়ার জন্য হালকা শ্যাডো
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // কোম্পানি লোগো - সাদা ব্যাকগ্রাউন্ডে ফিট করা হয়েছে
+                          Container(
+                            padding: EdgeInsets.all(5.r),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(4.r),
+                              child: Image.network(
+                                logoUrl,
+                                height: isMobile ? 35.r : 45.r,
+                                width: isMobile ? 35.r : 45.r,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.business, size: 30.r, color: Colors.grey),
+                              ),
+                            ),
                           ),
-                        ),
-                        Icon(Icons.open_in_new, size: 18.sp, color: Colors.grey),
-                      ],
-                    ),
-                    SizedBox(height: 15.h),
-                    _buildDurationBadge(duration),
-                  ],
+                          SizedBox(width: 15.w),
+
+                          // টেক্সট কন্টেন্ট
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  role,
+                                  style: TextStyle(
+                                    fontSize: isMobile ? 15.sp : 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  company,
+                                  style: TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: isMobile ? 13.sp : 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // এক্সটারনাল লিঙ্ক আইকন (শুধুমাত্র ডেক্সটপে সুন্দর দেখায়)
+                          if (!isMobile)
+                            Icon(Icons.open_in_new, size: 16.sp, color: Colors.grey),
+                        ],
+                      ),
+                      SizedBox(height: 15.h),
+
+                      // ডুরেশন ব্যাজ
+                      _buildDurationBadge(duration),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -112,12 +157,20 @@ class ExperienceCard extends StatelessWidget {
 
   Widget _buildDurationBadge(String duration) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: Colors.blueAccent.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(5.r),
+        borderRadius: BorderRadius.circular(6.r),
+        border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.1)),
       ),
-      child: Text(duration, style: TextStyle(color: Colors.blueAccent, fontSize: 12.sp, fontWeight: FontWeight.w600)),
+      child: Text(
+        duration,
+        style: TextStyle(
+          color: Colors.blueAccent,
+          fontSize: isMobile ? 11.sp : 12.sp,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }

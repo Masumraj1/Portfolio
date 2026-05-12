@@ -20,7 +20,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scrollController = ref.watch(scrollControllerProvider);
     final isMobile = MediaQuery.of(context).size.width < 768;
-
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     // Keys for Scrolling
     final aboutKey = GlobalKey();
     final educationKey = GlobalKey();
@@ -38,6 +38,7 @@ class HomePage extends ConsumerWidget {
     }
 
     return Scaffold(
+      key: scaffoldKey,
       drawerEnableOpenDragGesture: true,
       drawer: isMobile
           ? MobileDrawer(
@@ -54,7 +55,9 @@ class HomePage extends ConsumerWidget {
         children: [
           // ===========>>Navbar <<=============
           CustomNavbar(
+
             isMobile: isMobile,
+            onMenuPressed: () => scaffoldKey.currentState?.openDrawer(),
             scrollTo: scrollTo,
             aboutKey: aboutKey,
             skillsKey: skillsKey,
