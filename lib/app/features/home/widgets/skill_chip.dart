@@ -11,8 +11,8 @@ class SkillChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Modern Slate Color
-        borderRadius: BorderRadius.circular(30.r), // Rounded Pills
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(30.r),
         border: Border.all(
           color: Colors.blueAccent.withValues(alpha: 0.3),
           width: 1,

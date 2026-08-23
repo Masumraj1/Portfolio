@@ -13,7 +13,6 @@ class ContactSection extends StatelessWidget {
     required this.isMobile,
   });
 
-  // URL লঞ্চ করার ফাংশন (উন্নত এরর হ্যান্ডেলিং সহ)
   Future<void> _launch(String urlString) async {
     final Uri url = Uri.parse(urlString);
     try {
@@ -88,7 +87,7 @@ class ContactSection extends StatelessWidget {
     );
   }
 
-  // বাম পাশের কন্টাক্ট ডিটেইলস
+
   Widget _buildContactDetails() {
     return Column(
       crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
@@ -116,14 +115,13 @@ class ContactSection extends StatelessWidget {
           child: const ContactInfoTile(
             icon: Icons.location_on_rounded,
             label: "Location",
-            value: "Pollobi, Section 12, Dhaka",
+            value: "Mirpur 12, Section 12, Dhaka",
           ),
         ),
       ],
     );
   }
 
-  // ডান পাশের CTA (Call to Action)
   Widget _buildCTASection() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

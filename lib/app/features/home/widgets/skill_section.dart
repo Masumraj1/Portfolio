@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SkillsSection extends StatelessWidget {
+class SkillsSection extends StatefulWidget {
   final GlobalKey sectionKey;
   final bool isMobile;
 
@@ -12,75 +12,105 @@ class SkillsSection extends StatelessWidget {
   });
 
   @override
+  State<SkillsSection> createState() => _SkillsSectionState();
+}
+
+class _SkillsSectionState extends State<SkillsSection> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    // ১.৫ সেকেন্ডে স্মুথ অ্যানিমেশন
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.fastOutSlowIn,
+    );
+
+    // পেজ লোড বা সেকশনে আসার সাথে সাথে অ্যানিমেশন স্টার্ট হবে
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> skillCategories = [
       {
-        'title': 'Programming Languages',
+        'title': 'Core Languages & Framework',
         'icon': Icons.code_rounded,
-        'skills': ['Dart (Expert)', 'Kotlin (Expert)', 'Java (Expert)'],
-      },
-      {
-        'title': 'Mobile Development',
-        'icon': Icons.phone_android_rounded,
         'skills': [
-          'Flutter',
-          'Android Native',
-          'Platform Channels',
-          'Clean Architecture',
-          'SOLID Principles',
+          {'name': 'Flutter', 'percent': 0.95},
+          {'name': 'Dart', 'percent': 0.90},
+          {'name': 'Kotlin', 'percent': 0.75},
         ],
       },
       {
-        'title': 'State Management',
-        'icon': Icons.account_tree_rounded,
-        'skills': ['Riverpod', 'Bloc', 'GetX', 'Provider']
+        'title': 'Architecture & State',
+        'icon': Icons.architecture_rounded,
+        'skills': [
+          {'name': 'Clean Architecture', 'percent': 0.90},
+          {'name': 'Riverpod', 'percent': 0.85},
+          {'name': 'GetX', 'percent': 0.80},
+        ],
       },
       {
-        'title': 'Cloud & Database',
-        'icon': Icons.cloud_done_rounded,
-        'skills': ['Firebase', 'Firestore', 'Auth', 'Analytics', 'Crashlytics']
+        'title': 'Native & Core Features',
+        'icon': Icons.phone_android_rounded,
+        'skills': [
+          {'name': 'Platform Channels', 'percent': 0.70},
+          {'name': 'Background Services', 'percent': 0.75},
+          {'name': 'Google Maps', 'percent': 0.85},
+        ],
       },
       {
-        'title': 'Payments',
-        'icon': Icons.payments_rounded,
-        'skills': ['Stripe', 'PayPal', 'SSLCommerz', 'bKash', 'Nagad']
-      },
-      {
-        'title': 'Tools & PM',
-        'icon': Icons.construction_rounded,
-        'skills': ['Git', 'GitHub', 'Jira', 'Asana', 'Notion', 'CI/CD']
+        'title': 'Networking & Backend',
+        'icon': Icons.alt_route_rounded,
+        'skills': [
+          {'name': 'API (Dio / Http)', 'percent': 0.95},
+          {'name': 'Firebase', 'percent': 0.85},
+          {'name': 'REST & WebSockets', 'percent': 0.80},
+        ],
       },
     ];
 
     return Container(
-      key: sectionKey,
+      key: widget.sectionKey,
       padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 60.h : 90.h,
-        horizontal: isMobile ? 20.w : 100.w,
+        vertical: widget.isMobile ? 60.h : 90.h,
+        horizontal: widget.isMobile ? 16.w : 100.w,
       ),
       child: Column(
         children: [
-          // Section Title Component
-          SectionTitle(title: "Technical Expertise", isMobile: isMobile),
-          SizedBox(height: isMobile ? 40.h : 60.h),
+          SectionTitle(title: "Technical Expertise", isMobile: widget.isMobile),
+          SizedBox(height: widget.isMobile ? 40.h : 60.h),
 
-          // GridView.builder এর বদলে Wrap বা LayoutBuilder ব্যবহার করা হয়েছে
-          // যাতে কার্ডের হাইট কন্টেন্ট অনুযায়ী অটোমেটিক বাড়ে।
           LayoutBuilder(
             builder: (context, constraints) {
+              int crossAxisCount = widget.isMobile ? 1 : 2;
+
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: skillCategories.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isMobile ? 1 : (constraints.maxWidth > 1200 ? 3 : 2),
-                  crossAxisSpacing: 20.w,
-                  mainAxisSpacing: 20.h,
-                  // মোবাইলে হাইট ফিক্সড রাখা যাবে না, ডেক্সটপে ৩২০ মোটামুটি স্ট্যান্ডার্ড
-                  mainAxisExtent: isMobile ? null : 320.h,
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 24.w,
+                  mainAxisSpacing: 24.h,
+                  mainAxisExtent: widget.isMobile ? 290.h : 310.h,
                 ),
                 itemBuilder: (context, index) {
-                  return _buildCategoryCard(skillCategories[index]);
+                  return _buildSkillCard(skillCategories[index]);
                 },
               );
             },
@@ -90,22 +120,29 @@ class SkillsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryCard(Map<String, dynamic> category) {
+  Widget _buildSkillCard(Map<String, dynamic> category) {
     return Container(
-      padding: EdgeInsets.all(isMobile ? 18.r : 24.r),
+      padding: EdgeInsets.all(widget.isMobile ? 20.r : 24.r),
       decoration: BoxDecoration(
         color: const Color(0xFF161B22),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // কন্টেন্ট অনুযায়ী সাইজ হবে
         children: [
+          /// Card Header
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8.r),
+                padding: EdgeInsets.all(10.r),
                 decoration: BoxDecoration(
                   color: Colors.blueAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10.r),
@@ -113,7 +150,7 @@ class SkillsSection extends StatelessWidget {
                 child: Icon(
                   category['icon'],
                   color: Colors.blueAccent,
-                  size: isMobile ? 20.sp : 22.sp,
+                  size: widget.isMobile ? 22.sp : 24.sp,
                 ),
               ),
               SizedBox(width: 12.w),
@@ -121,50 +158,107 @@ class SkillsSection extends StatelessWidget {
                 child: Text(
                   category['title'],
                   style: TextStyle(
-                    fontSize: isMobile ? 16.sp : 18.sp,
+                    fontSize: widget.isMobile ? 16.sp : 18.sp,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                     letterSpacing: 0.5,
                   ),
                 ),
               ),
             ],
           ),
+
+          SizedBox(height: 20.h),
+          const Divider(color: Colors.white10, height: 1),
           SizedBox(height: 20.h),
 
-          // স্কিল চিপস
-          Wrap(
-            spacing: 8.w,
-            runSpacing: 8.h,
-            children: (category['skills'] as List<String>).map((skill) {
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.1)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check_circle_rounded,
-                        color: Colors.blueAccent.withValues(alpha: 0.6),
-                        size: isMobile ? 10.sp : 12.sp),
-                    SizedBox(width: 6.w),
-                    Text(
-                      skill,
-                      style: TextStyle(
-                        fontSize: isMobile ? 12.sp : 13.sp,
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+          /// Animated Progress Bars
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: (category['skills'] as List<Map<String, dynamic>>).map((skill) {
+                return AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    final double currentPercent = skill['percent'] * _animation.value;
+                    return _buildProgressBar(
+                      name: skill['name'],
+                      percent: currentPercent,
+                    );
+                  },
+                );
+              }).toList(),
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProgressBar({required String name, required double percent}) {
+    int percentageValue = (percent * 100).toInt();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: widget.isMobile ? 13.sp : 14.sp,
+                color: Colors.white.withValues(alpha: 0.9),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              "$percentageValue%",
+              style: TextStyle(
+                fontSize: widget.isMobile ? 12.sp : 13.sp,
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Monospace',
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        Stack(
+          children: [
+            // Background Track
+            Container(
+              height: 6.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D1117),
+                borderRadius: BorderRadius.circular(10.r),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              ),
+            ),
+            // Animated Foreground Progress
+            FractionallySizedBox(
+              widthFactor: percent.clamp(0.0, 1.0),
+              child: Container(
+                height: 6.h,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                  ),
+                  borderRadius: BorderRadius.circular(10.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withValues(alpha: 0.4),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -178,17 +272,23 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: isMobile ? 28.sp : 34.sp,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.white, Color(0xFF90CAF9)],
+          ).createShader(bounds),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: isMobile ? 28.sp : 36.sp,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+              color: Colors.white,
+            ),
           ),
         ),
         SizedBox(height: 8.h),
         Container(
-          width: isMobile ? 40.w : 56.w,
+          width: isMobile ? 40.w : 60.w,
           height: 4.h,
           decoration: BoxDecoration(
             color: Colors.blueAccent,

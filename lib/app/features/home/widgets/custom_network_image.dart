@@ -53,7 +53,7 @@ class CustomNetworkImage extends StatelessWidget {
           width: width,
           decoration: BoxDecoration(
             border: border,
-            color: backgroundColor , // Default to white for placeholder
+            color: backgroundColor ,
             borderRadius: borderRadius,
             shape: boxShape,
           ),
@@ -64,7 +64,7 @@ class CustomNetworkImage extends StatelessWidget {
         width: width,
         decoration: BoxDecoration(
           border: border,
-          color: backgroundColor , // Red for error
+          color: backgroundColor ,
           borderRadius: borderRadius,
           shape: boxShape,
         ),

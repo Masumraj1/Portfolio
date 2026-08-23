@@ -25,7 +25,7 @@ class MobileDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF0D1117), // 🔥 IMPORTANT
+      backgroundColor: const Color(0xFF0D1117),
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24.r),
@@ -88,7 +88,7 @@ class MobileDrawer extends StatelessWidget {
   }
 
   void _navigate(BuildContext context, GlobalKey key) {
-    Navigator.pop(context); // 🔥 drawer close first
+    Navigator.pop(context);
     scrollTo(key);
   }
 }

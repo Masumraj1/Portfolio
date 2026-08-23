@@ -5,8 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'app/core/theme/app_theme.dart';
 import 'app/features/home/views/home_page.dart';
 
-
-
 void main() {
   runApp(const ProviderScope(child: PortfolioApp()));
 }
@@ -31,5 +29,3 @@ class PortfolioApp extends StatelessWidget {
     );
   }
 }
-
-

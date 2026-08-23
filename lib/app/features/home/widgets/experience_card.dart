@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ExperienceCard extends StatelessWidget {
+class ExperienceCard extends StatefulWidget {
   final String role;
   final String company;
   final String duration;
@@ -23,127 +23,185 @@ class ExperienceCard extends StatelessWidget {
   });
 
   @override
+  State<ExperienceCard> createState() => _ExperienceCardState();
+}
+
+class _ExperienceCardState extends State<ExperienceCard> {
+  bool isHovered = false;
+
+  Future<void> _launchCompanyUrl() async {
+    final Uri url = Uri.parse(widget.companyUrl);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint('Could not launch $url');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline Indicator
+          // =========== Timeline Node & Vertical Bar ===========
           Column(
             children: [
-              Container(
-                width: isMobile ? 12.r : 14.r,
-                height: isMobile ? 12.r : 14.r,
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: widget.isMobile ? 32.r : 40.r,
+                height: widget.isMobile ? 32.r : 40.r,
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent,
                   shape: BoxShape.circle,
+                  color: isHovered ? Colors.blueAccent : const Color(0xFF161B22),
+                  border: Border.all(
+                    color: Colors.blueAccent,
+                    width: 2,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                    )
+                      color: Colors.blueAccent.withValues(alpha: isHovered ? 0.5 : 0.2),
+                      blurRadius: isHovered ? 12 : 6,
+                      spreadRadius: isHovered ? 2 : 0,
+                    ),
                   ],
                 ),
+                child: Icon(
+                  Icons.business_center_rounded,
+                  size: widget.isMobile ? 16.sp : 18.sp,
+                  color: isHovered ? Colors.white : Colors.blueAccent,
+                ),
               ),
-              if (!isLast)
+              if (!widget.isLast)
                 Expanded(
                   child: Container(
                     width: 2.w,
-                    color: Colors.blueAccent.withValues(alpha: 0.15),
+                    margin: EdgeInsets.symmetric(vertical: 6.h),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.blueAccent.withValues(alpha: 0.5),
+                          Colors.blueAccent.withValues(alpha: 0.1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
                   ),
                 ),
             ],
           ),
-          SizedBox(width: isMobile ? 15.w : 25.w),
+          SizedBox(width: widget.isMobile ? 16.w : 24.w),
 
-          // Content Card
+          // =========== Interactive Content Card ===========
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 25.h),
-              child: InkWell(
-                onTap: () async {
-                  final Uri url = Uri.parse(companyUrl);
-                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                    debugPrint('Could not launch $url');
-                  }
-                },
-                borderRadius: BorderRadius.circular(16.r),
-                child: Container(
-                  padding: EdgeInsets.all(isMobile ? 16.r : 20.r),
+            child: MouseRegion(
+              onEnter: (_) => setState(() => isHovered = true),
+              onExit: (_) => setState(() => isHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: _launchCompanyUrl,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: EdgeInsets.only(bottom: 30.h),
+                  padding: EdgeInsets.all(widget.isMobile ? 18.r : 24.r),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF161B22),
+                    color: isHovered
+                        ? Colors.blueAccent.withValues(alpha: 0.08)
+                        : const Color(0xFF161B22).withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                    // হোভার ইফেক্ট দেওয়ার জন্য হালকা শ্যাডো
-                    boxShadow: [
+                    border: Border.all(
+                      color: isHovered
+                          ? Colors.blueAccent.withValues(alpha: 0.4)
+                          : Colors.white.withValues(alpha: 0.08),
+                      width: 1.2,
+                    ),
+                    boxShadow: isHovered
+                        ? [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      )
-                    ],
+                        color: Colors.blueAccent.withValues(alpha: 0.15),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                        : [],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // কোম্পানি লোগো - সাদা ব্যাকগ্রাউন্ডে ফিট করা হয়েছে
+                          // Company Logo Container
                           Container(
-                            padding: EdgeInsets.all(5.r),
+                            padding: EdgeInsets.all(6.r),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.r),
+                              borderRadius: BorderRadius.circular(10.r),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(4.r),
+                              borderRadius: BorderRadius.circular(6.r),
                               child: Image.network(
-                                logoUrl,
-                                height: isMobile ? 35.r : 45.r,
-                                width: isMobile ? 35.r : 45.r,
+                                widget.logoUrl,
+                                height: widget.isMobile ? 32.r : 40.r,
+                                width: widget.isMobile ? 32.r : 40.r,
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) =>
-                                    Icon(Icons.business, size: 30.r, color: Colors.grey),
+                                    Icon(Icons.apartment_rounded, size: 26.r, color: Colors.grey.shade700),
                               ),
                             ),
                           ),
-                          SizedBox(width: 15.w),
+                          SizedBox(width: 14.w),
 
-                          // টেক্সট কন্টেন্ট
+                          // Role & Company Title
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  role,
+                                  widget.role,
                                   style: TextStyle(
-                                    fontSize: isMobile ? 15.sp : 18.sp,
+                                    fontSize: widget.isMobile ? 15.sp : 18.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
+                                SizedBox(height: 2.h),
                                 Text(
-                                  company,
+                                  widget.company,
                                   style: TextStyle(
                                     color: Colors.blueAccent,
-                                    fontSize: isMobile ? 13.sp : 14.sp,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: widget.isMobile ? 13.sp : 14.sp,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          // এক্সটারনাল লিঙ্ক আইকন (শুধুমাত্র ডেক্সটপে সুন্দর দেখায়)
-                          if (!isMobile)
-                            Icon(Icons.open_in_new, size: 16.sp, color: Colors.grey),
+                          Icon(
+                            Icons.arrow_outward_rounded,
+                            size: 18.sp,
+                            color: isHovered ? Colors.blueAccent : Colors.grey.shade600,
+                          ),
                         ],
                       ),
-                      SizedBox(height: 15.h),
+                      SizedBox(height: 16.h),
 
-                      // ডুরেশন ব্যাজ
-                      _buildDurationBadge(duration),
+                      // Duration Badge
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          widget.duration,
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: widget.isMobile ? 11.sp : 12.sp,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -151,25 +209,6 @@ class ExperienceCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDurationBadge(String duration) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: Colors.blueAccent.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6.r),
-        border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.1)),
-      ),
-      child: Text(
-        duration,
-        style: TextStyle(
-          color: Colors.blueAccent,
-          fontSize: isMobile ? 11.sp : 12.sp,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

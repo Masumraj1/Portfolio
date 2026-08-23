@@ -16,53 +16,51 @@ class AboutSection extends StatelessWidget {
     return Container(
       key: sectionKey,
       width: double.infinity,
-      // মোবাইলে ২০ প্যাডিং ঠিক আছে, কিন্তু ওয়েবে ১৫০ অনেক সময় বেশি হয়ে যায়, তাই ১০০.w ভালো
       padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24.w : 100.w,
+        horizontal: isMobile ? 20.w : 80.w,
         vertical: isMobile ? 60.h : 100.h,
       ),
       child: Column(
         children: [
-          // Section Title
-          Text(
-            "About Me",
-            style: TextStyle(
-              fontSize: isMobile ? 28.sp : 36.sp, // রেসপন্সিভ সাইজ
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: Colors.white,
-            ),
-          ),
+
           SizedBox(height: 12.h),
 
-          // Decorative Underline
-          Container(
-            width: isMobile ? 50.w : 70.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10.r),
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Colors.white, Color(0xFF90CAF9)],
+            ).createShader(bounds),
+            child: Text(
+              "About Me",
+              style: TextStyle(
+                fontSize: isMobile ? 28.sp : 38.sp,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+                color: Colors.white,
+              ),
             ),
           ),
           SizedBox(height: 40.h),
 
-          // About Description
+          // =========== Bio Highlight Box ===========
           ConstrainedBox(
-            // ডেসক্রিপশন যাতে খুব বেশি ছড়িয়ে না যায় (পড়তে সুবিধা হয়)
             constraints: BoxConstraints(maxWidth: 900.w),
             child: Text(
-              "I am Md. Masum Rana, a Mobile Application Developer at ASL Systems Ltd. My journey began with a year of dedicated self-learning, which paved the way for my 2+ years of professional experience in building high-quality Flutter apps. Currently pursuing a BBA at ZNRF University (ZUMS), I bridge the gap between business logic and technical excellence. Beyond the code, I am a passionate bike rider who thrives on logic, discipline, and the open road.",
+              "I am Md. Masum Rana, a Mobile Application Developer at ASL Systems Ltd. My journey began with a year of dedicated self-learning, paving the way for 3+ years of professional experience building high-quality Flutter apps. I bridge business logic with technical excellence, thriving on Clean Architecture, discipline, and building scalable digital solutions.",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: isMobile ? 15.sp : 18.sp, // মোবাইল অনুযায়ী সাইজ ফিক্স
-                color: Colors.grey.shade400,
+                fontSize: isMobile ? 15.sp : 18.sp,
+                color: const Color(0xFF8B949E),
                 height: 1.6,
-                letterSpacing: 0.5,
+                letterSpacing: 0.3,
               ),
             ),
           ),
+          SizedBox(height: 40.h),
+
+
         ],
       ),
     );
   }
 }
+

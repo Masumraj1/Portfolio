@@ -11,30 +11,29 @@ class StatsSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 50.h : 80.h,
-        horizontal: 20.w,
+        vertical: isMobile ? 40.h : 60.h,
+        horizontal: isMobile ? 20.w : 60.w,
       ),
-      // একটি হালকা ব্যাকগ্রাউন্ড কালার এবং বর্ডার দেওয়া হয়েছে প্রফেশনাল লুকের জন্য
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
+        color: const Color(0xFF0D1117).withValues(alpha: 0.6),
         border: Border.symmetric(
           horizontal: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: Colors.white.withValues(alpha: 0.08),
+            width: 1,
           ),
         ),
       ),
       child: Center(
         child: Wrap(
-          // মোবাইলে সেন্টারে থাকবে, আর পাশাপাশি এবং উপরে-নিচে গ্যাপ মেইনটেইন করবে
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: isMobile ? 40.w : 100.w, // পাশাপাশি গ্যাপ
-          runSpacing: 40.h,                // মোবাইলে নিচে নিচে নামলে গ্যাপ
+          spacing: isMobile ? 30.w : 80.w,
+          runSpacing: 30.h,
           children: const [
-            StatItem(value: "2+", label: "Years Job Exp"),
-            StatItem(value: "1+", label: "Self Learning"),
-            StatItem(value: "15+", label: "Projects Done"),
-            StatItem(value: "3", label: "Companies"),
+            _StatItem(value: "3+", label: "Years Experience"),
+            _StatItem(value: "1+", label: "Self Learning"),
+            _StatItem(value: "15+", label: "Projects Completed"),
+            _StatItem(value: "3", label: "Companies"),
           ],
         ),
       ),
@@ -42,45 +41,80 @@ class StatsSection extends StatelessWidget {
   }
 }
 
-/// আলাদা একটি উইজেট হিসেবে StatItem তৈরি করা হয়েছে কোড ক্লিন রাখার জন্য
-class StatItem extends StatelessWidget {
+class _StatItem extends StatefulWidget {
   final String value;
   final String label;
 
-  const StatItem({
-    super.key,
+  const _StatItem({
     required this.value,
     required this.label,
   });
 
   @override
-  Widget build(BuildContext context) {
-    // স্ক্রিন সাইজ অনুযায়ী ফন্ট সাইজ অ্যাডজাস্ট করার লজিক
-    bool isSmallScreen = MediaQuery.of(context).size.width < 768;
+  State<_StatItem> createState() => _StatItemState();
+}
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isSmallScreen ? 28.sp : 40.sp,
-            fontWeight: FontWeight.w900,
-            color: Colors.blueAccent,
+class _StatItemState extends State<_StatItem> {
+  bool isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 768;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHovered = true),
+      onExit: (_) => setState(() => isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: 12.h,
+        ),
+        decoration: BoxDecoration(
+          color: isHovered
+              ? Colors.blueAccent.withValues(alpha: 0.08)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: isHovered
+                ? Colors.blueAccent.withValues(alpha: 0.3)
+                : Colors.transparent,
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(
-          label.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: isSmallScreen ? 12.sp : 14.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade500,
-            letterSpacing: 1.2,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: isHovered
+                    ? [Colors.cyanAccent, Colors.blueAccent]
+                    : [Colors.blueAccent, Colors.lightBlueAccent],
+              ).createShader(bounds),
+              child: Text(
+                widget.value,
+                style: TextStyle(
+                  fontSize: isSmallScreen ? 32.sp : 44.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ),
+            SizedBox(height: 6.h),
+            Text(
+              widget.label.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: isSmallScreen ? 11.sp : 13.sp,
+                fontWeight: FontWeight.w700,
+                color: isHovered ? Colors.white : const Color(0xFF8B949E),
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

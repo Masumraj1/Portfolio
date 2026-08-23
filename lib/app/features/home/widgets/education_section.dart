@@ -18,39 +18,62 @@ class EducationSection extends StatelessWidget {
         duration: '2023 – Present',
         degree: 'Bachelor of Business Administration (BBA)',
         institution: 'ZNRF University of Management Sciences (ZUMS), Dhaka',
+        icon: Icons.school_rounded,
       ),
       EducationItem(
         duration: '2020',
         degree: 'Higher Secondary Certificate (HSC)',
         institution: 'Pirgonj Government College, Pirgonj, Thakurgaon',
+        icon: Icons.history_edu_rounded,
       ),
       EducationItem(
         duration: '2018',
         degree: 'Secondary School Certificate (SSC)',
         institution: 'Nakati Hat High School, Pirgonj, Thakurgaon',
+        icon: Icons.menu_book_rounded,
       ),
     ];
 
     return Container(
       key: sectionKey,
+      width: double.infinity,
       padding: EdgeInsets.symmetric(
         vertical: isMobile ? 60.h : 90.h,
         horizontal: isMobile ? 20.w : 100.w,
       ),
       child: Column(
         children: [
-          SectionTitle(title: 'Education', isMobile: isMobile),
+
+          SizedBox(height: 12.h),
+
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Colors.white, Color(0xFF90CAF9)],
+            ).createShader(bounds),
+            child: Text(
+              "Education",
+              style: TextStyle(
+                fontSize: isMobile ? 28.sp : 38.sp,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+                color: Colors.white,
+              ),
+            ),
+          ),
           SizedBox(height: isMobile ? 40.h : 60.h),
 
-          // ইন্ট্রিনসিক হাইট ব্যবহার করা হয়েছে যাতে টাইমলাইন লাইনটি টেক্সট অনুযায়ী বাড়ে
-          Column(
-            children: educationList
-                .map((item) => EducationTimelineCard(
-              item: item,
-              isMobile: isMobile,
-              isLast: educationList.last == item,
-            ))
-                .toList(),
+          // =========== Timeline Content ===========
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 900.w),
+            child: Column(
+              children: educationList
+                  .map((item) => EducationTimelineCard(
+                item: item,
+                isMobile: isMobile,
+                isLast: educationList.last == item,
+              ))
+                  .toList(),
+            ),
           ),
         ],
       ),
@@ -62,15 +85,17 @@ class EducationItem {
   final String duration;
   final String degree;
   final String institution;
+  final IconData icon;
 
   const EducationItem({
     required this.duration,
     required this.degree,
     required this.institution,
+    required this.icon,
   });
 }
 
-class EducationTimelineCard extends StatelessWidget {
+class EducationTimelineCard extends StatefulWidget {
   final EducationItem item;
   final bool isMobile;
   final bool isLast;
@@ -83,117 +108,162 @@ class EducationTimelineCard extends StatelessWidget {
   });
 
   @override
+  State<EducationTimelineCard> createState() => _EducationTimelineCardState();
+}
+
+class _EducationTimelineCardState extends State<EducationTimelineCard> {
+  bool isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight( // এটি কন্টেন্ট অনুযায়ী বামের লাইনকে বড় করবে
+    return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Timeline Indicator
+
           Column(
             children: [
-              Container(
-                width: isMobile ? 12.r : 14.r,
-                height: isMobile ? 12.r : 14.r,
-                decoration: const BoxDecoration(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: widget.isMobile ? 32.r : 40.r,
+                height: widget.isMobile ? 32.r : 40.r,
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blueAccent,
+                  color: isHovered
+                      ? Colors.blueAccent
+                      : const Color(0xFF161B22),
+                  border: Border.all(
+                    color: Colors.blueAccent,
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withValues(alpha: isHovered ? 0.5 : 0.2),
+                      blurRadius: isHovered ? 12 : 6,
+                      spreadRadius: isHovered ? 2 : 0,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  widget.item.icon,
+                  size: widget.isMobile ? 16.sp : 18.sp,
+                  color: isHovered ? Colors.white : Colors.blueAccent,
                 ),
               ),
-              if (!isLast)
+              if (!widget.isLast)
                 Expanded(
                   child: Container(
                     width: 2.w,
-                    color: Colors.blueAccent.withValues(alpha: 0.3),
+                    margin: EdgeInsets.symmetric(vertical: 6.h),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.blueAccent.withValues(alpha: 0.5),
+                          Colors.blueAccent.withValues(alpha: 0.1),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
                   ),
                 ),
             ],
           ),
-          SizedBox(width: isMobile ? 15.w : 22.w),
+          SizedBox(width: widget.isMobile ? 16.w : 24.w),
 
           /// Content Card
           Expanded(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 25.h),
-              padding: EdgeInsets.all(isMobile ? 18.r : 26.r),
-              decoration: BoxDecoration(
-                color: const Color(0xFF161B22),
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.06),
+            child: MouseRegion(
+              onEnter: (_) => setState(() => isHovered = true),
+              onExit: (_) => setState(() => isHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: EdgeInsets.only(bottom: 30.h),
+                padding: EdgeInsets.all(widget.isMobile ? 18.r : 24.r),
+                decoration: BoxDecoration(
+                  color: isHovered
+                      ? Colors.blueAccent.withValues(alpha: 0.08)
+                      : const Color(0xFF161B22).withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: isHovered
+                        ? Colors.blueAccent.withValues(alpha: 0.4)
+                        : Colors.white.withValues(alpha: 0.08),
+                    width: 1.2,
+                  ),
+                  boxShadow: isHovered
+                      ? [
+                    BoxShadow(
+                      color: Colors.blueAccent.withValues(alpha: 0.15),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                      : [],
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.duration,
-                    style: TextStyle(
-                      fontSize: isMobile ? 12.sp : 13.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.blueAccent,
-                      letterSpacing: 0.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Year Chip Badge
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        widget.item.duration,
+                        style: TextStyle(
+                          fontSize: widget.isMobile ? 11.sp : 12.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.blueAccent,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    item.degree,
-                    style: TextStyle(
-                      fontSize: isMobile ? 16.sp : 19.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    SizedBox(height: 12.h),
+
+                    Text(
+                      widget.item.degree,
+                      style: TextStyle(
+                        fontSize: widget.isMobile ? 16.sp : 19.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    item.institution,
-                    style: TextStyle(
-                      fontSize: isMobile ? 13.sp : 14.sp,
-                      color: Colors.white70,
-                      height: 1.4,
+                    SizedBox(height: 6.h),
+
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 14.sp,
+                          color: const Color(0xFF8B949E),
+                        ),
+                        SizedBox(width: 4.w),
+                        Expanded(
+                          child: Text(
+                            widget.item.institution,
+                            style: TextStyle(
+                              fontSize: widget.isMobile ? 12.sp : 14.sp,
+                              color: const Color(0xFF8B949E),
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class SectionTitle extends StatelessWidget {
-  final String title;
-  final bool isMobile;
-
-  const SectionTitle({
-    super.key,
-    required this.title,
-    required this.isMobile,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: isMobile ? 28.sp : 34.sp,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-          ),
-        ),
-        SizedBox(height: 8.h),
-        Container(
-          width: isMobile ? 45.w : 56.w,
-          height: 4.h,
-          decoration: BoxDecoration(
-            color: Colors.blueAccent,
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-        ),
-      ],
     );
   }
 }
