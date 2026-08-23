@@ -13,6 +13,7 @@ class ContactSection extends StatelessWidget {
     required this.isMobile,
   });
 
+<<<<<<< HEAD
   // লঞ্চার ফাংশন (Uri কনফিগারেশন সহ)
   Future<void> _launch(String urlString) async {
     final Uri url = Uri.parse(urlString);
@@ -20,6 +21,18 @@ class ContactSection extends StatelessWidget {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint("Error launching URL: $e");
+=======
+  Future<void> _launch(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        debugPrint("Could not launch $url");
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+>>>>>>> gh-pages
     }
   }
 
@@ -29,11 +42,22 @@ class ContactSection extends StatelessWidget {
       key: sectionKey,
       width: double.infinity,
       padding: EdgeInsets.symmetric(
+<<<<<<< HEAD
         vertical: 100.h,
         horizontal: isMobile ? 24.w : 120.w,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFF0A0E12), // ডার্ক থিম হলে এটি খুব সুন্দর লাগবে
+=======
+        vertical: isMobile ? 60.h : 100.h,
+        horizontal: isMobile ? 24.w : 120.w,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent.withValues(alpha: 0.02),
+        border: Border(
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+        ),
+>>>>>>> gh-pages
       ),
       child: Column(
         children: [
@@ -41,6 +65,7 @@ class ContactSection extends StatelessWidget {
           Text(
             "Get In Touch",
             style: TextStyle(
+<<<<<<< HEAD
               fontSize: isMobile ? 28.sp : 40.sp,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -50,12 +75,24 @@ class ContactSection extends StatelessWidget {
           SizedBox(height: 12.h),
           Container(
             width: 60.w,
+=======
+              fontSize: isMobile ? 28.sp : 34.sp,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Container(
+            width: 50.w,
+>>>>>>> gh-pages
             height: 4.h,
             decoration: BoxDecoration(
               color: Colors.blueAccent,
               borderRadius: BorderRadius.circular(10.r),
             ),
           ),
+<<<<<<< HEAD
           SizedBox(height: 16.h),
           Text(
             "Feel free to reach out for collaborations or just a friendly hello!",
@@ -67,12 +104,15 @@ class ContactSection extends StatelessWidget {
             ),
           ),
           SizedBox(height: 80.h),
+=======
+          SizedBox(height: isMobile ? 40.h : 80.h),
+>>>>>>> gh-pages
 
-          Flex(
-            direction: isMobile ? Axis.vertical : Axis.horizontal,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // Layout Handling
+          isMobile
+              ? Column(
             children: [
+<<<<<<< HEAD
               // Left Side: Contact Cards
               Expanded(
                 flex: isMobile ? 0 : 1,
@@ -138,6 +178,20 @@ class ContactSection extends StatelessWidget {
                   ),
                 ),
               ),
+=======
+              _buildContactDetails(),
+              SizedBox(height: 60.h),
+              _buildCTASection(),
+            ],
+          )
+              : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _buildContactDetails()),
+              SizedBox(width: 50.w),
+              Expanded(child: _buildCTASection()),
+>>>>>>> gh-pages
             ],
           ),
         ],
@@ -145,6 +199,7 @@ class ContactSection extends StatelessWidget {
     );
   }
 
+<<<<<<< HEAD
   // কন্টাক্ট কার্ড তৈরি করার হেল্পার উইজেট
   Widget _buildContactCard({
     required IconData icon,
@@ -212,6 +267,89 @@ class ContactSection extends StatelessWidget {
             style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
           ),
         ],
+=======
+
+  Widget _buildContactDetails() {
+    return Column(
+      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        _clickableTile(
+          onTap: () => _launch('mailto:masumrna927@gmail.com'),
+          child: const ContactInfoTile(
+            icon: Icons.alternate_email_rounded,
+            label: "Email Me",
+            value: "masumrna927@gmail.com",
+          ),
+        ),
+        SizedBox(height: 15.h),
+        _clickableTile(
+          onTap: () => _launch('tel:+8801731090564'),
+          child: const ContactInfoTile(
+            icon: Icons.phone_iphone_rounded,
+            label: "Call Me",
+            value: "+880 1731090564",
+          ),
+        ),
+        SizedBox(height: 15.h),
+        _clickableTile(
+          onTap: () => _launch('https://maps.google.com/?q=Pollobi,Section12,Dhaka'),
+          child: const ContactInfoTile(
+            icon: Icons.location_on_rounded,
+            label: "Location",
+            value: "Mirpur 12, Section 12, Dhaka",
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCTASection() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Have a project in mind?",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: isMobile ? 18.sp : 22.sp,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 25.h),
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 30.w : 40.w,
+              vertical: 22.h,
+            ),
+            backgroundColor: Colors.blueAccent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+            elevation: 8,
+            shadowColor: Colors.blueAccent.withValues(alpha: 0.3),
+          ),
+          onPressed: () => _launch('mailto:masumrna927@gmail.com?subject=Project Inquiry'),
+          icon: Icon(Icons.send_rounded, size: 20.sp),
+          label: Text(
+            "Let's Build Something",
+            style: TextStyle(
+              fontSize: isMobile ? 14.sp : 16.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _clickableTile({required VoidCallback onTap, required Widget child}) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: child,
+>>>>>>> gh-pages
       ),
     );
   }

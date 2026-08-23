@@ -20,7 +20,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scrollController = ref.watch(scrollControllerProvider);
     final isMobile = MediaQuery.of(context).size.width < 768;
-
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     // Keys for Scrolling
     final aboutKey = GlobalKey();
     final educationKey = GlobalKey();
@@ -38,38 +38,39 @@ class HomePage extends ConsumerWidget {
     }
 
     return Scaffold(
+      key: scaffoldKey,
       drawerEnableOpenDragGesture: true,
       drawer: isMobile
           ? MobileDrawer(
-        scrollTo: scrollTo,
-        aboutKey: aboutKey,
-        educationKey: educationKey,
-        skillsKey: skillsKey,
-        expKey: expKey,
-        projectsKey: projectsKey,
-        contactKey: contactKey,
-      )
+              scrollTo: scrollTo,
+              aboutKey: aboutKey,
+              educationKey: educationKey,
+              skillsKey: skillsKey,
+              expKey: expKey,
+              projectsKey: projectsKey,
+              contactKey: contactKey,
+            )
           : null,
       body: Column(
         children: [
           // ===========>>Navbar <<=============
           CustomNavbar(
             isMobile: isMobile,
+            onMenuPressed: () => scaffoldKey.currentState?.openDrawer(),
             scrollTo: scrollTo,
             aboutKey: aboutKey,
             skillsKey: skillsKey,
             expKey: expKey,
             projectsKey: projectsKey,
-            contactKey: contactKey, educationKey: educationKey,
+            contactKey: contactKey,
+            educationKey: educationKey,
           ),
-
 
           Expanded(
             child: SingleChildScrollView(
               controller: scrollController,
               child: Column(
                 children: [
-
                   //============Hero Section===========
                   HeroSection(
                     isMobile: isMobile,
@@ -81,36 +82,21 @@ class HomePage extends ConsumerWidget {
                   StatsSection(isMobile: isMobile),
 
                   //===============About Section===========
-                  AboutSection(
-                    sectionKey: aboutKey,
-                    isMobile: isMobile,
-                  ),
+                  AboutSection(sectionKey: aboutKey, isMobile: isMobile),
 
                   //=============Education Section============
                   EducationSection(
                     sectionKey: educationKey,
                     isMobile: isMobile,
                   ),
-                  //===============Skill Section===========
-                  SkillsSection(
-                    sectionKey: skillsKey,
-                    isMobile: isMobile,
-                  ),
-                //=================ExperienceSection ===========
-                  ExperienceSection(
-                    sectionKey: expKey,
-                    isMobile: isMobile,
-                  ),
+                  // //===============Skill Section===========
+                  SkillsSection(sectionKey: skillsKey, isMobile: isMobile),
+                  //=================ExperienceSection ===========
+                  ExperienceSection(sectionKey: expKey, isMobile: isMobile),
                   //=================ProjectsSection ===========
-                  ProjectsSection(
-                    sectionKey: projectsKey,
-                    isMobile: isMobile,
-                  ),
-                 //================Contact Section===============
-                  ContactSection(
-                    sectionKey: contactKey,
-                    isMobile: isMobile,
-                  ),
+                  ProjectsSection(sectionKey: projectsKey, isMobile: isMobile),
+                  //================Contact Section===============
+                  ContactSection(sectionKey: contactKey, isMobile: isMobile),
 
                   //=============Footer Section==========
                   const FooterSection(),
@@ -122,20 +108,4 @@ class HomePage extends ConsumerWidget {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
