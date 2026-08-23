@@ -6,7 +6,6 @@ import 'app/core/theme/app_theme.dart';
 import 'app/features/home/views/home_page.dart';
 
 void main() {
-
   runApp(const ProviderScope(child: PortfolioApp()));
 }
 
